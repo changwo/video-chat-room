@@ -16,5 +16,9 @@
   "bugs": {
     "url": "https://github.com/changwo/video-chat-room/issues"
   },
-  "homepage": "https://github.com/changwo/video-chat-room#readme"
+  "homepage": "https://github.com/changwo/video-chat-room#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "socket.io": "^2.3.0"
+  }
 }
