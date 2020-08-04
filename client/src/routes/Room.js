@@ -38,8 +38,53 @@ const Room = (props) => {
             socketRef.current.on("user joined", userID => {
                 otherUser.current = userID;
             })
+
+            socketRef.current.on("offer", handleReceiveCall);
+
+            socketRef.current.on("answer", handleAnswer);
+
+            socketRef.current.on("ice-candidate", handleNewICECandidateMsg);
         })
     }, [])
+
+    const CallUser = (userID) => {
+        peerRef.current = createPeer(userID);
+        userStream.current.getTracks().forEach(track => peerRef.current.addTrack(track, userStream.current))
+    }
+    const createPeer = (userID) => {
+        const peer = new RTCPeerConnection({
+            iceSevers: [
+                {
+                    urls: "stun:stun.stunprotocol.org"
+                },
+                {
+                    urls: 'turn:numb.viagenie.ca',
+                    credentials: 'muazkh',
+                    username: 'webrtc@live.com'
+                }
+            ]
+        })
+        peer.onicecandidate = handleICECandidateEvent;
+        peer.ontrack = handleTrackEvent;
+        peer.onnegotiationneeded = () => handleNegotiationNeededEvent(userID)
+
+        return peer
+    }
+
+    const handleNegotiationNeededEvent = userID => {
+        peerRef.current.createOffer().then(offer => {
+            return peerRef.current.setLocalDescription(offer);
+        }).then(() => {
+            const payload = {
+                target: userID,
+                caller: socketRef.current.id,
+                sdp: peerRef.current.localDescription
+            };
+            socketRef.current.emit("offer", payload)
+        }).catch(e => console.log("error", e))
+    }
+
+
 
     return (
         <Container>
