@@ -107,15 +107,29 @@ const Room = (props) => {
         peerRef.current.setRemoteDescription(desc).catch(e => console.log("error", e));
     }
 
+    const callUser = userID => {
+        peerRef.current = createPeer(userID);
+        userStream.current.getTracks().forEach(track => peerRef.current.addTrack(track, userStream.current));
+    }
+
     const handleICECandidateEvent = e => {
-        if(e.candiate) {
+        if (e.candiate) {
             const payload = {
                 target: otherUser.current,
                 candidate: e.candiate
             }
+            socketRef.current.emit("ice-candidate", payload)
         }
     }
 
+    const handleNewICECandidateMsg = incoming => {
+        const candidate = new RTCIceCandidate(incoming);
+        peerRef.current.addIceCandidate(candidate).catch(e => console.log("error", e))
+    }
+
+    const handleTrackEvent = e => {
+        partnerVideo.current.srcObject = e.streams[0];
+    };
 
     return (
         <Container>
