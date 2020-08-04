@@ -44,6 +44,8 @@ const Room = (props) => {
             socketRef.current.on("answer", handleAnswer);
 
             socketRef.current.on("ice-candidate", handleNewICECandidateMsg);
+
+
         })
     }, [])
 

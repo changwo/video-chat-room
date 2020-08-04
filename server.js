@@ -32,6 +32,10 @@ io.on("connection", socket => {
     socket.on("ice-candidate", incoming => {
         io.to(incoming.target).emit("ice-candidate", incoming.candidate);
     })
+    // socket.on("user-disconnected", userId => {
+    //     console.log("userID", userId)
+    // })
+
 })
 
 server.listen(8000, () => console.log('server is running on port 8000'));
