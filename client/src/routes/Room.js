@@ -84,6 +84,37 @@ const Room = (props) => {
         }).catch(e => console.log("error", e))
     }
 
+    const handleReceiveCall = incoming => {
+        peerRef.current = createPeer();
+        const desc = new RTCSessionDescription(incoming.sdp)
+        peerRef.current.setRemoteDescription(desc).then(() => {
+            userStream.current.getTracks().forEach(track => peerRef.current.addTrack(track, userStream.current));
+        }).then(() => {
+            return peerRef.current.createAnswer();
+        }).then(answer => {
+            return peerRef.current.setLocalDescription(answer);
+        }).then(() => {
+            const payload = {
+                target: incoming.caller,
+                caller: socketRef.current.id,
+                sdp: peerRef.current.localDescription
+            }
+            socketRef.current.emit("answer", payload);
+        })
+    }
+    const handleAnswer = message => {
+        const desc = new RTCSessionDescription(message.sdp);
+        peerRef.current.setRemoteDescription(desc).catch(e => console.log("error", e));
+    }
+
+    const handleICECandidateEvent = e => {
+        if(e.candiate) {
+            const payload = {
+                target: otherUser.current,
+                candidate: e.candiate
+            }
+        }
+    }
 
 
     return (
