@@ -47,11 +47,13 @@ const Room = (props) => {
         })
     }, [])
 
-    const CallUser = (userID) => {
+
+    function callUser(userID) {
         peerRef.current = createPeer(userID);
-        userStream.current.getTracks().forEach(track => peerRef.current.addTrack(track, userStream.current))
+        userStream.current.getTracks().forEach(track => peerRef.current.addTrack(track, userStream.current));
     }
-    const createPeer = (userID) => {
+
+    function createPeer(userID) {
         const peer = new RTCPeerConnection({
             iceSevers: [
                 {
@@ -59,7 +61,7 @@ const Room = (props) => {
                 },
                 {
                     urls: 'turn:numb.viagenie.ca',
-                    credentials: 'muazkh',
+                    credential: 'muazkh',
                     username: 'webrtc@live.com'
                 }
             ]
@@ -71,7 +73,7 @@ const Room = (props) => {
         return peer
     }
 
-    const handleNegotiationNeededEvent = userID => {
+    function handleNegotiationNeededEvent(userID) {
         peerRef.current.createOffer().then(offer => {
             return peerRef.current.setLocalDescription(offer);
         }).then(() => {
@@ -84,7 +86,7 @@ const Room = (props) => {
         }).catch(e => console.log("error", e))
     }
 
-    const handleReceiveCall = incoming => {
+    function handleReceiveCall(incoming) {
         peerRef.current = createPeer();
         const desc = new RTCSessionDescription(incoming.sdp)
         peerRef.current.setRemoteDescription(desc).then(() => {
@@ -102,34 +104,31 @@ const Room = (props) => {
             socketRef.current.emit("answer", payload);
         })
     }
-    const handleAnswer = message => {
+
+    function handleAnswer(message) {
         const desc = new RTCSessionDescription(message.sdp);
         peerRef.current.setRemoteDescription(desc).catch(e => console.log("error", e));
     }
 
-    const callUser = userID => {
-        peerRef.current = createPeer(userID);
-        userStream.current.getTracks().forEach(track => peerRef.current.addTrack(track, userStream.current));
-    }
 
-    const handleICECandidateEvent = e => {
-        if (e.candiate) {
+    function handleICECandidateEvent(e) {
+        if (e.candidate) {
             const payload = {
                 target: otherUser.current,
-                candidate: e.candiate
+                candidate: e.candidate
             }
             socketRef.current.emit("ice-candidate", payload)
         }
     }
 
-    const handleNewICECandidateMsg = incoming => {
+    function handleNewICECandidateMsg(incoming) {
         const candidate = new RTCIceCandidate(incoming);
         peerRef.current.addIceCandidate(candidate).catch(e => console.log("error", e))
     }
 
-    const handleTrackEvent = e => {
+    function handleTrackEvent(e) {
         partnerVideo.current.srcObject = e.streams[0];
-    };
+    }
 
     return (
         <Container>
