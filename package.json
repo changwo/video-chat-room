@@ -1,0 +1,20 @@
+{
+  "name": "video-chat-rooms",
+  "version": "1.0.0",
+  "description": "\"# video-chat-room\"",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/changwo/video-chat-room.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/changwo/video-chat-room/issues"
+  },
+  "homepage": "https://github.com/changwo/video-chat-room#readme"
+}
